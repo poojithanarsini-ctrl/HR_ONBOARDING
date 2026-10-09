@@ -9,3 +9,4 @@ faiss-cpu
 sqlalchemy
 bcrypt
 pytest
+groq
