@@ -1,4 +1,4 @@
-from modules.rag_pipeline import index_policy_text
+
 import streamlit as st
 if "user" not in st.session_state or st.session_state["user"] is None:
     st.error("Please log in to access the HR Admin page.")
