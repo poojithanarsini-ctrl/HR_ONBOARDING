@@ -114,10 +114,16 @@ def create_hr_admin(name, email, password):
         role="hr_admin",
     )
 
+
 def ensure_hr_admin(name, email, password):
-    """Create the configured demo admin only if the email is unused."""
+    """Ensure only the admin email configured in Secrets has the admin role."""
     initialize_database()
+
+    name = name.strip()
     email = email.strip().lower()
+
+    if not name or not email or len(password) < 8:
+        return False, "Invalid HR admin configuration."
 
     with get_connection() as connection:
         existing = connection.execute(
@@ -125,9 +131,21 @@ def ensure_hr_admin(name, email, password):
             (email,),
         ).fetchone()
 
-    if existing:
+        if existing is None:
+            return create_hr_admin(name, email, password)
+
         if existing["role"] == "hr_admin":
             return True, "HR admin account already exists."
-        return False, "That email belongs to a non-admin account."
 
-    return create_hr_admin(name, email, password)
+        # Promote only the email explicitly configured in Streamlit Secrets.
+        new_password_hash = hash_password(password)
+        connection.execute(
+            """
+            UPDATE users
+            SET name = ?, role = 'hr_admin', password_hash = ?
+            WHERE email = ?
+            """,
+            (name, new_password_hash, email),
+        )
+
+    return True, "Configured HR admin account updated."

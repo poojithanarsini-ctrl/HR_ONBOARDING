@@ -2,21 +2,33 @@
 import streamlit as st
 from modules.auth import register_user, login_user, ensure_hr_admin
 
-st.set_page_config(page_title="HR Onboarding - Login", page_icon="🔐")
+st.set_page_config(
+    page_title="HR Onboarding - Login",
+    page_icon="🔐",
+)
 
 # Set up the configured demo HR admin from Streamlit Secrets.
 try:
     admin = st.secrets["hr_admin"]
+
     success, message = ensure_hr_admin(
         name=admin["name"],
         email=admin["email"],
         password=admin["password"],
     )
-    if not success:
-        st.warning(message)
-except (KeyError, FileNotFoundError):
-    st.info("Demo HR admin is not configured.")
 
+    if success:
+        st.info(f"Demo admin setup: {message}")
+    else:
+        st.warning(f"Demo admin setup: {message}")
+
+    st.caption(f"Admin email configured: {admin['email']}")
+
+except (KeyError, FileNotFoundError):
+    st.warning(
+        "Demo HR admin is not configured. "
+        "Check your Streamlit Secrets settings."
+    )
 
 st.title("🔐 HR Onboarding Portal")
 st.write("Sign in or create an employee account.")
@@ -28,7 +40,6 @@ if st.session_state["user"]:
     user = st.session_state["user"]
 
     st.success(f"Welcome, {user['name']}!")
-
     st.write(f"**Email:** {user['email']}")
     st.write(f"**Role:** {user['role'].replace('_', ' ').title()}")
 
@@ -46,7 +57,7 @@ else:
             email = st.text_input("Email address")
             password = st.text_input(
                 "Password",
-                type="password"
+                type="password",
             )
             login_clicked = st.form_submit_button("Login")
 
@@ -71,15 +82,15 @@ else:
             email = st.text_input("Work email address")
             password = st.text_input(
                 "Create password",
-                type="password"
+                type="password",
             )
             confirm_password = st.text_input(
                 "Confirm password",
-                type="password"
+                type="password",
             )
 
             register_clicked = st.form_submit_button(
-                "Create account"
+                "Create account",
             )
 
         if register_clicked:
@@ -92,7 +103,7 @@ else:
                     name=name,
                     email=email,
                     password=password,
-                    role="employee"
+                    role="employee",
                 )
 
                 if success:
@@ -101,5 +112,3 @@ else:
                     )
                 else:
                     st.error(message)
-
-
