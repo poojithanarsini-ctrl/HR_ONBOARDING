@@ -1,0 +1,28 @@
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python cache files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+.venv312/
+venv/
+
+# Local database
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# Uploaded HR documents
+data/policy_documents/
+
+# IDE and operating system files
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,11 @@
+
+streamlit
+google-genai
+python-dotenv
+pypdf
+python-docx
+sentence-transformers
+faiss-cpu
+sqlalchemy
+bcrypt
+pytest
