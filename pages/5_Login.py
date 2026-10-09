@@ -17,12 +17,8 @@ try:
         password=admin["password"],
     )
 
-    if success:
-        st.info(f"Demo admin setup: {message}")
-    else:
+    if not success:
         st.warning(f"Demo admin setup: {message}")
-
-    st.caption(f"Admin email configured: {admin['email']}")
 
 except (KeyError, FileNotFoundError):
     st.warning(
