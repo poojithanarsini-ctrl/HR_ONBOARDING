@@ -26,3 +26,6 @@ data/policy_documents/
 .vscode/
 .DS_Store
 Thumbs.db
+
+.streamlit/
+create_admin.py

@@ -1,9 +1,22 @@
 
 import streamlit as st
-
-from modules.auth import register_user, login_user
+from modules.auth import register_user, login_user, ensure_hr_admin
 
 st.set_page_config(page_title="HR Onboarding - Login", page_icon="🔐")
+
+# Set up the configured demo HR admin from Streamlit Secrets.
+try:
+    admin = st.secrets["hr_admin"]
+    success, message = ensure_hr_admin(
+        name=admin["name"],
+        email=admin["email"],
+        password=admin["password"],
+    )
+    if not success:
+        st.warning(message)
+except (KeyError, FileNotFoundError):
+    st.info("Demo HR admin is not configured.")
+
 
 st.title("🔐 HR Onboarding Portal")
 st.write("Sign in or create an employee account.")
@@ -88,4 +101,5 @@ else:
                     )
                 else:
                     st.error(message)
+
 

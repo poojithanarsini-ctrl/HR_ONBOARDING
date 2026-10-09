@@ -104,3 +104,30 @@ def login_user(email, password):
         "email": user["email"],
         "role": user["role"],
     }
+
+def create_hr_admin(name, email, password):
+    """Create an HR admin account safely without duplicating an email."""
+    return register_user(
+        name=name,
+        email=email,
+        password=password,
+        role="hr_admin",
+    )
+
+def ensure_hr_admin(name, email, password):
+    """Create the configured demo admin only if the email is unused."""
+    initialize_database()
+    email = email.strip().lower()
+
+    with get_connection() as connection:
+        existing = connection.execute(
+            "SELECT role FROM users WHERE email = ?",
+            (email,),
+        ).fetchone()
+
+    if existing:
+        if existing["role"] == "hr_admin":
+            return True, "HR admin account already exists."
+        return False, "That email belongs to a non-admin account."
+
+    return create_hr_admin(name, email, password)
