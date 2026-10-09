@@ -1,4 +1,3 @@
-
 import sqlite3
 from pathlib import Path
 
@@ -88,7 +87,7 @@ def initialize_database():
 
 
 def seed_onboarding_tasks():
-    """Add the initial onboarding tasks without creating duplicates."""
+    """Add initial onboarding tasks without creating duplicates."""
     tasks = [
         (
             "Read the employee handbook",
@@ -145,6 +144,32 @@ def get_onboarding_tasks():
 def set_task_progress(user_id, task_id, completed):
     """Save task progress for a specific employee."""
     with get_connection() as connection:
+        # Confirm that the employee exists
+        user = connection.execute(
+            "SELECT id FROM users WHERE id = ?",
+            (user_id,)
+        ).fetchone()
+
+        if user is None:
+            raise ValueError(
+                "Employee account not found. Please log in again."
+            )
+
+        # Confirm that the task exists and is active
+        task = connection.execute(
+            """
+            SELECT id FROM onboarding_tasks
+            WHERE id = ? AND is_active = 1
+            """,
+            (task_id,)
+        ).fetchone()
+
+        if task is None:
+            raise ValueError(
+                "Onboarding task not found. Please refresh the page."
+            )
+
+        # Insert progress or update the existing record
         connection.execute(
             """
             INSERT INTO employee_task_progress
@@ -158,7 +183,7 @@ def set_task_progress(user_id, task_id, completed):
                 is_completed = excluded.is_completed,
                 completed_at = CASE
                     WHEN excluded.is_completed = 1
-                        THEN CURRENT_TIMESTAMP
+                    THEN CURRENT_TIMESTAMP
                     ELSE NULL
                 END
             """,
@@ -194,7 +219,7 @@ def get_employee_progress(user_id):
 
 
 def get_database_path():
-    """Return the location of the SQLite database file."""
+    """Return the location of the database file."""
     return str(DB_PATH)
 
 
